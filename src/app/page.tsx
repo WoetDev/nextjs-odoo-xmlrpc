@@ -1,6 +1,13 @@
 // app/page.tsx
 import { OdooClient, OdooField } from "@/lib/odoo";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Odoo Models Explorer",
+  description:
+    "Browse and explore Odoo models, fields, and their relationships in a user-friendly interface.",
+};
 
 function FieldList({ fields }: { fields: Record<string, OdooField> }) {
   const fieldEntries = Object.entries(fields).sort(([a], [b]) =>
