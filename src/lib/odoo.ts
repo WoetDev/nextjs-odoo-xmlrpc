@@ -8,34 +8,21 @@ export interface OdooConfig {
   password: string;
 }
 
+export interface OdooField {
+  type: string;
+  string: string;
+  required: boolean;
+  readonly: boolean;
+  relation?: string;
+  help?: string;
+}
+
 export interface OdooModel {
   id: number;
   model: string;
   name: string;
+  fields?: Record<string, OdooField>;
 }
-
-interface SearchReadOptions {
-  fields?: string[];
-  offset?: number;
-  limit?: number;
-  order?: string;
-}
-
-type DomainOperator =
-  | "="
-  | "!="
-  | ">"
-  | ">="
-  | "<"
-  | "<="
-  | "like"
-  | "ilike"
-  | "in"
-  | "not in"
-  | "child_of"
-  | "parent_of";
-type DomainValue = string | number | boolean | null | Array<string | number>;
-type Domain = Array<[string, DomainOperator, DomainValue]>;
 
 type ClientOptions = {
   host: string;
@@ -74,7 +61,7 @@ export class OdooClient {
     };
   }
 
-  private createClient(path: string): xmlrpc.Client {
+  private createClient(path: string) {
     const options = this.createClientOptions(path);
     return this.secure
       ? xmlrpc.createSecureClient(options)
@@ -126,32 +113,67 @@ export class OdooClient {
 
   async searchRead<T>(
     model: string,
-    domain: Domain = [],
+    domain: unknown[] = [],
     fields: string[] = [],
-    options: SearchReadOptions = {}
+    opts: { offset?: number; limit?: number; order?: string } = {}
   ): Promise<T[]> {
     const params = [
-      [domain],
+      domain,
       {
         fields,
-        ...options,
+        offset: opts.offset || 0,
+        limit: opts.limit || 0,
+        order: opts.order || "",
       },
     ];
     return this.executeKw<T[]>(model, "search_read", params);
   }
 
+  async getFields(model: string): Promise<Record<string, OdooField>> {
+    const params = [
+      [],
+      {
+        attributes: [
+          "string",
+          "help",
+          "type",
+          "required",
+          "readonly",
+          "relation",
+        ],
+      },
+    ];
+    return this.executeKw(model, "fields_get", params);
+  }
+
   async getModels(): Promise<OdooModel[]> {
+    // First get all models
     const models = await this.searchRead<OdooModel>(
       "ir.model",
-      [],
+      [], // Empty domain to get all models
       ["id", "model", "name"],
       { order: "model asc" }
     );
 
-    return models.map((model: OdooModel) => ({
-      id: model.id,
-      model: model.model,
-      name: model.name,
-    }));
+    // Then fetch fields for each model
+    const modelsWithFields = await Promise.all(
+      models.map(async (model) => {
+        try {
+          const fields = await this.getFields(model.model);
+          return {
+            ...model,
+            fields,
+          };
+        } catch {
+          // If we can't access the model's fields, skip it
+          return null;
+        }
+      })
+    );
+
+    // Filter out null values (models we couldn't access)
+    return modelsWithFields.filter(
+      (model): model is NonNullable<typeof model> => model !== null
+    );
   }
 }
