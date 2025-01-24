@@ -1,5 +1,6 @@
 // app/page.tsx
 import { OdooClient, OdooField } from "@/lib/odoo";
+import Link from "next/link";
 
 function FieldList({ fields }: { fields: Record<string, OdooField> }) {
   const fieldEntries = Object.entries(fields).sort(([a], [b]) =>
@@ -62,11 +63,26 @@ export default async function Home() {
   const models = await getOdooModels();
 
   return (
-    <div className="p-4 max-w-[95%] mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Odoo Models</h1>
-      <div className="mb-4 text-sm text-gray-500">
-        Found {models.length} models
+    <main className="p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-4">Odoo Models</h1>
+        <div className="mb-4 text-sm text-gray-500">
+          Found {models.length} models
+        </div>
+        <nav>
+          <ul className="flex gap-4">
+            <li>
+              <Link
+                href="/accounts"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                View Chart of Accounts
+              </Link>
+            </li>
+          </ul>
+        </nav>
       </div>
+
       <div className="space-y-8">
         {models.map((model) => (
           <div key={model.id} className="border rounded-lg p-4 shadow-sm">
@@ -85,6 +101,6 @@ export default async function Home() {
           </div>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

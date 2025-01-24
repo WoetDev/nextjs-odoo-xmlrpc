@@ -100,14 +100,14 @@ export class OdooClient {
         batch.map(async (model) => {
           try {
             const fields = await this.getFields(model.model);
-            console.log(`Fetched fields for ${model.model}`);
+
             return {
               ...model,
               fields,
             };
           } catch (error) {
             console.warn(
-              `Could not fetch fields for model ${model.model}:`,
+              `❌ Could not fetch fields for model ${model.model}:`,
               error
             );
             return model;
