@@ -155,6 +155,8 @@ export class OdooClient {
       { order: "model asc" }
     );
 
+    console.log(`Found ${models.length} models`);
+
     // Then fetch fields for each model
     const modelsWithFields = await Promise.all(
       models.map(async (model) => {
