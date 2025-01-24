@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Odoo Model Explorer using Next.js
+
+A Next.js web application that provides an example on how to explore Odoo models, fields, and data. This tool helps developers using Next.js to understand how to build an Odoo integration.
+
+## Features
+
+- **Model Overview**: Lists all accessible models in your Odoo instance with their technical names and descriptions
+- **Field Inspection**: For each model, displays detailed field information including:
+  - Field name and label
+  - Field type
+  - Required/Readonly status
+  - Help text
+  - Relations to other models
+- **Chart of Accounts**: As an example on how to fetch data, a dedicated page to explore the accounting structure:
+  - Account codes and names
+  - Account types
+  - Company association
+  - Reconciliation status
 
 ## Getting Started
 
-First, run the development server:
-
+1. Set up your environment variables in `.env.local`:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+ODOO_HOST=your-odoo-url
+ODOO_DB=your-database-name
+ODOO_USER=your-username
+ODOO_PASSWORD=your-password
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to explore your Odoo instance.
 
-## Learn More
+## Technical Details
 
-To learn more about Next.js, take a look at the following resources:
+- Built with Next.js 15 and React
+- Uses Tailwind CSS for styling
+- Integrates with Odoo using the odoo-await library
+- Server-side rendering for optimal performance
+- TypeScript for type safety
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security Note
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This application requires Odoo credentials to function. Make sure to:
+- Use appropriate credentials with limited access rights
+- Never commit sensitive information to version control
+- Consider using API keys instead of user passwords
+- Deploy in a secure environment
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
